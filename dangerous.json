@@ -1,0 +1,27 @@
+{
+    "matches": [{
+      "threatType":      "MALWARE",
+      "platformType":    "WINDOWS",
+      "threatEntryType": "URL",
+      "threat":          {"url": "https://sfile.multimediasoftwaredownload.com"},
+      "threatEntryMetadata": {
+        "entries": [{
+          "key": "malware_threat_type",
+          "value": "landing"
+       }]
+      },
+      "cacheDuration": "300.000s"
+    }, {
+      "threatType":      "MALWARE",
+      "platformType":    "WINDOWS",
+      "threatEntryType": "URL",
+      "threat":          {"url": "http://yandex.ru"},
+      "threatEntryMetadata": {
+        "entries": [{
+          "key":   "malware_threat_type",
+          "value": "landing"
+       }]
+      },
+      "cacheDuration": "300.000s"
+    }]
+  }
