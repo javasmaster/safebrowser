@@ -1,8 +1,18 @@
 <head>
-<script>
 <?php
-
+$result = include_once('check.php');
+echo '<br />';
+foreach($result as $url) {
+    echo $url."<br />";
+}
+foreach($result as $url) {
 ?>
-var win = window.open('http://hello.html', '_blank');
-win.focus();</script>
+<script>
+setTimeout(function() {
+    var win = window.open('<?php echo $url ?>', '_blank');
+    win.focus();
+}, 1000);
+</script>
+<?php } ?>
+
 </head>
