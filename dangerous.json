@@ -15,7 +15,7 @@
       "threatType":      "MALWARE",
       "platformType":    "WINDOWS",
       "threatEntryType": "URL",
-      "threat":          {"url": "http://yandex.ru"},
+      "threat":          {"url": "http://ruscorpora.ru"},
       "threatEntryMetadata": {
         "entries": [{
           "key":   "malware_threat_type",

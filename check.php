@@ -1,36 +1,79 @@
 
 <?php
-$txt_file    = file_get_contents('sites.txt');
-$rows        = explode("\r\n", $txt_file);
+$sites_list    = file_get_contents('sites.txt');
+$rows        = explode("\r\n", $sites_list);
+
+$check_status = [];
+$statuslist = file_get_contents('statuslist.txt');
+$s_rows        = explode("\n", $statuslist);
+array_pop($s_rows);
+
+foreach($s_rows as $status_row) {
+    // echo $status_row.' ';
+    $temp = explode(':', $status_row);
+    // var_dump($temp);
+    $check_status[$temp[0]] = $temp[1];
+    
+}
+
+foreach($check_status as $key => $value) {
+    if($value == "clean") {
+        $whitelist[] = $key;
+    }
+    else {
+        $blacklist[] = $key;
+    }
+}
+var_dump($whitelist);
+var_dump($blacklist);
+// exit();
+
+// var_dump($s_rows);
+// exit();
 $verifiedSites = []; // SSL check
 $enablesSites = []; // Google browser safer
 $redirectList = []; // Site for redirects
 $threatSites = []; // dangerous sites
 
-var_dump($rows);
-
 // First - check if ssl certificate is enabled remotely
+
 foreach($rows as $data)
 {
     $url = $data;
     $original_parse = trim(parse_url($url, PHP_URL_HOST));
-    $g = stream_context_create (array("ssl" => array("capture_peer_cert" => true)));
+        echo 'start = '.$original_parse;
+            // var_dump('check', $check_status);
+            $status = array_search($original_parse, $blacklist);
+            if($status !== false) { // if the url in blacklist
+                echo 'blacklist - '.$original_parse;
+                continue; // stop the process
+            }
+            else {
+                echo 'YANDEXU + '.$original_parse;
+                $status = array_search($original_parse, $whitelist);
+                if($status !== false ) { // if the url in whitelist
+                    echo 'whitelist - '.$original_parse;
+                    array_push($verifiedSites, $original_parse); // just add URL for redirect
+                }
+                else {
+                    $g = stream_context_create (array("ssl" => array("capture_peer_cert" => true)));
 
-    $r = @stream_socket_client("ssl://www.".$original_parse.":443", $errno, $errstr, 30,
-    STREAM_CLIENT_CONNECT, $g);
-    // echo "HEEEEERE ".$r;
-    if($r == NULL) {
-        break;
-    }
-    else {
-        $cont = stream_context_get_params($r);
-        array_push($verifiedSites, $data);
-        array_push($redirectList, $original_parse);
-        // var_dump($cont["options"]["ssl"]["peer_certificate"]);
-    }
+                    $r = @stream_socket_client("ssl://www.".$original_parse.":443", $errno, $errstr, 30,
+                    STREAM_CLIENT_CONNECT, $g);
+                    if($r == NULL) {
+                        continue;
+                    }
+                    else {
+                        $cont = stream_context_get_params($r);
+                        array_push($verifiedSites, $url); // add URL for redirect 
+                        // array_push($redirectList, $original_parse); 
+                    }
+                }
+            }
+            
 }
-// var_dump($verifiedSites, ['VERIFIED']);
 
+// var_dump($verifiedSites);
 
 // Second - check if the site is malware free with google safe broswering
 
@@ -67,15 +110,20 @@ $res = json_encode($json_a);
 
   $result = json_decode($result, true);
   
-  if(empty($result)) { // change $result to $dang to test dangerous urls
-      echo 'empty';
-      $verified = file_get_contents("verified.json");
-      $verified = json_decode($params, true);
-      array_push();
-
+  if(empty($dang)) { // change $result to $dang to test dangerous urls
+    //   echo 'empty';
+    //$verified = file_get_contents("whitelist.txt");
+    // Add clean sites to the whitelist
+      foreach($enablesSites as $add) {
+        // var_dump($add);
+        file_put_contents("statuslist.txt", $add['url'].":clean\n", FILE_APPEND | LOCK_EX);
+        array_push($redirectList, 'https://'.$add['url']); // add URL for redirect 
+      }
+      
+      
   }
   else {
-      echo 'DANGEROUS!';
+    //   echo 'DANGEROUS!';
       // check if the matches found
       foreach($dang['matches'] as $threat) {
         $threat_url = $threat['threat']['url'];
@@ -86,9 +134,17 @@ $res = json_encode($json_a);
         }
         array_push($threatSites, $threat_url);
       }
-      var_dump($threatSites, '1');
-      var_dump($redirectList, '2');
-      $sum = array_diff($redirectList, $threatSites); // remove all of dangerous sites from redirect list
-      var_dump($sum);
+    //   var_dump($threatSites, '1');
+    //   var_dump($redirectList, '2');
+      $clean = array_diff($redirectList, $threatSites); // remove all of dangerous sites from redirect list
+    //   var_dump($redirectList);
+    // Add the unclean sites to the blacklist
+      foreach($clean as $add) {
+        file_put_contents("statuslist.txt", $add.":clean\n", FILE_APPEND | LOCK_EX);
+      }
+      foreach($threatSites as $add) {
+        file_put_contents("statuslist.txt", $add.":unclean\n", FILE_APPEND | LOCK_EX);
+      }
   }
+  var_dump($redirectList);
 ?>
