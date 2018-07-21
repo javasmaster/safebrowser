@@ -1,11 +1,8 @@
-google.com:clean
 yandex.ru:clean
-ruscorpora.ru:unclean
-sfile.multimediasoftwaredownload.com:unclean
+google.com:clean
 joom.com:clean
+sfile.multimediasoftwaredownload.com:unclean
 vk.com:clean
-zaicev.net:unclean
-zaycev.net:clean
-instagram.com:clean
+zaycev.net:unclean
 patefon.net:unclean
 masyamba.ru:unclean
