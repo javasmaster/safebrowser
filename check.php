@@ -26,7 +26,10 @@ function checkSSL($original_parse, $url) {
     global $redirectList;
     $checkGoogle = $url;
     $g = stream_context_create (array("ssl" => array("capture_peer_cert" => true)));
-
+     // check if the url begins with www
+    if(substr( $original_parse, 0, 4 ) == "www.") {
+         $original_parse = substr($original_parse, 4);
+    }
     $r = @stream_socket_client("ssl://www.".$original_parse.":443", $errno, $errstr, 30,
     STREAM_CLIENT_CONNECT, $g);
     if($r == NULL) {
