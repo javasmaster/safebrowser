@@ -1,8 +1,5 @@
-yandex.ru:clean
-google.com:clean
-joom.com:clean
-sfile.multimediasoftwaredownload.com:unclean
-vk.com:clean
-zaycev.net:unclean
-patefon.net:unclean
-masyamba.ru:unclean
+www.netflix.com:clean
+www.pythoncentral.io:clean
+orange-fidelite.eu:clean
+orange-fidelite.eu:clean
+faorrr.net:unclean
